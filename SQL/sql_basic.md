@@ -36,7 +36,7 @@
 - 데이터 삽입 : **INSERT**
 - 데이터 수정 : **UPDATE**
 - 데이터 삭제 : **DELETE**
-~~DDL 명령어의 경우 실행시 AUTO COMMIT하지만 DML의 경우 COMMIT을 입력해야 함. (SQL Server의 경울 DML도 AUTO COMMIT)~~
+* ~~DDL 명령어의 경우 실행시 AUTO COMMIT하지만 DML의 경우 COMMIT을 입력해야 함. (SQL Server의 경울 DML도 AUTO COMMIT)~~
 
 ### TCL_트랜잭션 제어어
 트랜잭션(TRANSACTION) : DBMS에서 데이터를 다루는 밀접히 관련되어 분리될 수 없는 1개 이상의 DB 조작의 단위.
@@ -56,3 +56,15 @@
 2. **일관성(Consistency)** : 트랜잭션 실행 전 db 내용이 잘못되지 않으면 실행 후도 잘못되지 않아야 함.
 3. **고립성(Isolation)** : 수행 중인 트랜잭션에 다른 트랜잭션이 끼어들어 변경 중인 데이터 값을 훼손하는 일이 없어야 함.
 4. **지속성(Durability)** : 트랜잭션이 성공적으로 수행되면 변경된 데이터는 영구히 저장됨.
+
+### 연산자
+- BETWEEN a AND b : a와 b 값 사이에 있으면 됨.
+- IN (list) : 라스트에 있는 값 중 어느 하나라도 일치.
+- NOT IN (list) : 리스트에 있는 값과 일치하지 않음.
+- LIKE '비교문자열' : 비교문자열의 형태가 일치.
+- IS NULL : NULL값인 경우.
+- IS NOT NULL : NULL값을 갖지 않음.
+
+* **연산자 우선순위** : () -> NOT -> 비교연산자 -> AND -> OR
+
+
