@@ -1,7 +1,7 @@
 # SQL
 : 관계형 DB에서 데이터 정의, 조작, 제어를 위해 사용하는 언어
 
-## SQL의 분류
+### SQL의 분류
 - DML(Data Manipulation Language) : SELECT, INSERT, UPDATE, DELETE 등 데이터 조작어
 - DDL(Data Definition Language) : 테이블 생성, 수정, 삭제; CREATE, ALTER, DROP, RENAME 등 데이터 정의어
 - DCL(Data Control Language) : GRANT, REVOKE 등 데이터 제어어
@@ -75,14 +75,18 @@
 () -> NOT -> 비교연산자 -> AND -> OR
 
 * EX.
-SELECT PLAYER_NAME 선수명  FROM PLAYER  ex1)WHERE TEAM_ID = 'K2'; -> TEAM_ID가 'K2'인 사람  ex2)WHERE TEAM_ID IN ('K2','K7'); -> TEAM_ID가 K2, K7 중 하나라도 일치하는 사람  ex3)WHERE HEIGHT BETWEEN 170 AND 180; -> 키가 170~180인 사람  ex4)WHERE POSITION IS NULL; -> 포지션이 없는 사람
+SELECT PLAYER_NAME 선수명<br>
+FROM PLAYER<br>
+ex1)WHERE TEAM_ID = 'K2'; -> TEAM_ID가 'K2'인 사람<br>
+ex2)WHERE TEAM_ID IN ('K2','K7'); -> TEAM_ID가 K2, K7 중 하나라도 일치하는 사람<br>
+ex3)WHERE HEIGHT BETWEEN 170 AND 180; -> 키가 170~180인 사람  ex4)WHERE POSITION IS NULL; -> 포지션이 없는 사람
 
-> NULL값과의 수치연산은 NULL값을 리턴한다.
-> NULL값과의 비교연산은 FALSE를 리턴한다.
+> NULL값과의 수치연산은 NULL값을 리턴한다.<br>
+NULL값과의 비교연산은 FALSE를 리턴한다.
 
 * ROWNUM : 원하는 만큼의 행을 가져올 때 사용 (= TOP : SQL Server)
-- WHERE ROWNUM = 1;
-- SELECT TOP(1) PLAYER_NAME  FROM PLAYER;
+  - WHERE ROWNUM = 1;
+  - SELECT TOP(1) PLAYER_NAME  FROM PLAYER;
 
 ***
 
