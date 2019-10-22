@@ -39,15 +39,15 @@
 - 데이터 검색 : **SELECT**
 - 데이터 삽입 : **INSERT**
 - 데이터 수정 : **UPDATE**
-- 데이터 삭제 : **DELETE**
-* ~~DDL 명령어의 경우 실행시 AUTO COMMIT하지만 DML의 경우 COMMIT을 입력해야 함. (SQL Server의 경울 DML도 AUTO COMMIT)~~
+- 데이터 삭제 : **DELETE**<br>
+~~DDL 명령어의 경우 실행시 AUTO COMMIT하지만 DML의 경우 COMMIT을 입력해야 함. (SQL Server의 경울 DML도 AUTO COMMIT)~~
 ***
 ### TCL_트랜잭션 제어어
 트랜잭션(TRANSACTION) : DBMS에서 데이터를 다루는 밀접히 관련되어 분리될 수 없는 1개 이상의 DB 조작의 단위.
 데이터베이스에서 트랜잭션을 정의하는 이유 : 회복(장애복구)의 단위, 동시성 제어
-- **COMMIT** : 올바르게 반영된 데이터를 DB에 반영
-- **ROLLBACK** : 트랜잭션 시작 이전의 상태로 되돌림
-- **SAVEPOINT** : 저장 지점
+- COMMIT : 올바르게 반영된 데이터를 DB에 반영
+- ROLLBACK : 트랜잭션 시작 이전의 상태로 되돌림
+- SAVEPOINT : 저장 지점
 
 * SAVEPOINT SVPT1; (Oracle)
 * ROLLBACK TO SVPT1; (Oracle)
@@ -71,10 +71,8 @@
 - IS NULL : NULL값인 경우.
 - IS NOT NULL : NULL값을 갖지 않음.
 
-* **연산자 우선순위**
-() -> NOT -> 비교연산자 -> AND -> OR
-
-* EX.
+  - **연산자 우선순위** : () -> NOT -> 비교연산자 -> AND -> OR
+  - EX.<br>
 SELECT PLAYER_NAME 선수명<br>
 FROM PLAYER<br>
 ex1)WHERE TEAM_ID = 'K2'; -> TEAM_ID가 'K2'인 사람<br>
