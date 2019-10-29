@@ -102,4 +102,4 @@ NULL값과의 비교연산은 FALSE를 리턴한다.
 - RTRIM('XXYYzzXYzz','z') -> 'XXYYzzXY'
 - TRIM('x' FROM 'xxYYZZxYZxx') -> 'YYZZxYZ'
 
-
+### 숫자형 
