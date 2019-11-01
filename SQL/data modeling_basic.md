@@ -33,7 +33,7 @@
 1976년 피터첸이 Entity Relationship Model  개발
 
 ### 모델링의 특징
-추상화, 단순화, 정확화
+추상화, 단순화, 정확
 
 ### Entity Relationship Diagram 작업순서
 1. 엔터티 그림
