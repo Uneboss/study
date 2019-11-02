@@ -113,3 +113,22 @@ NULL값과의 비교연산은 FALSE를 리턴한다.
   TRUNC(38.5235) -> 38
   
 ### 날짜형 함수
+- SYSDATE/GETDATE() : 현재날짜와 시각 출력
+- EXTRACT/DATEPART : 날짜에서 데이터 출력
+- TO_NUMBER(TO_CHAR(d,'YYYY'))/YEAR(d)<br>
+Ex.<br>
+SELECT ENAME,<br>
+       CASE WHEN SAL >= 3000 THEN 'HIGH'<br>
+            WHEN SAL >= 1000 THEN 'MID'<br>
+            ELSE 'LOW'<br>
+       END AS SALARY_GRADE<br>
+FROM EMP;
+
+### NULL 관련 함수
+- NVL(식1,식2)/ISNULL(식1,식2) : 식1의 값이 NULL이면 식2
+- NULLIF(식1,식2) : 식1이 식2와 같으면 NULL을 아니면 식1을 출력
+- COALESCE(식1,식2) : 임의의 개수표현식에서 NULL이 아닌 최초의 표현식, 모두 NULL이면 NULL 반환<br>
+ex. COALESCE(NULL,NULL,'abc') -> 'abc'
+
+***
+
