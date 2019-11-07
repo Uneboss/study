@@ -129,6 +129,3 @@ FROM EMP;
 - NULLIF(식1,식2) : 식1이 식2와 같으면 NULL을 아니면 식1을 출력
 - COALESCE(식1,식2) : 임의의 개수표현식에서 NULL이 아닌 최초의 표현식, 모두 NULL이면 NULL 반환<br>
 ex. COALESCE(NULL,NULL,'abc') -> 'abc'
-
-***
-
