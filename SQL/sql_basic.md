@@ -131,3 +131,61 @@ FROM EMP;
 ex. COALESCE(NULL,NULL,'abc') -> 'abc'
 
 ***
+
+### 집계 함수
+1. 여러 행들의 그룹이 모여서 그룹당 단 하나의 결과를 돌려주는 함수이다.
+2. GROUP BY 절은  행들을 소그룹화한다.
+3. SELECT, HAVING, ORDER BY 절에 사용 가능
+- ALL : Default 옵션
+- DISTINCT : 같은 값을 하나의 데이터로 간주 옵션
+- COUNT( * ) : NULL 포함 행의 수
+- COUNT(표현식) : NULL 제외 행의 수
+- SUM, AVG : NULL 제외 합계, 평균 연산
+- STDDEV : 표준편차
+- VARIAN : 분산
+- MAX, MIN : 최대값, 최소값
+
+### GROUP BY, HAVING 절의 특징
+1. GROUP BY 절을 통을 통해 소그룹별 기준을 정한 후, SELECT 절에 집계 함수를 사용한다.
+2. 집계 함수의 통계 정보는 NULL 값을 가진 행을 제외하고 수행한다.
+3. GROUP BY 절에서는 ALIAS 사용 불가하다.
+4. 집계 함수는 WHERE 절에 올 수 없다.
+5. HAVING 절에는 집계 함수를 이용하여 조건 표시할 수 있다.
+6. HAVING 절은 일반적으로 GROUP BY 뒤에 위치한다.
+
+### SEARCHED_CASE_EXPRESSION
+CASE WHEN LOC = 'a' THEN 'b'
+### SIMPLE_CASE_EXPRESSEION
+CASE LOC WHEN 'a' THEN 'b'<br>
+위 두 명령문은 같은 의미이다.
+
+***
+
+### ORDER BY 특징
+1. SQL 문장으로 조회된 데이터들을 다양한 목적에 맞게 특정한 칼럼을 기준으로 정렬하여 출력하는데 사용한다.
+2. ORDER BY 절에 칼럼명 대신 ALIAS 명이나 칼럼 순서를 나타내는 정수도 사용 가능하다.
+3. DEFAULT 값으로 오름차순(ASC)이 적용되며 DESC 옵션을 통해 내림차순으로 정렬이 가능하다.
+4. SQL 문장의 제일 마지막에 위치한다.
+5. SELECT 절에서 정의하지 않은 칼럼 사용 가능<br>
+<br>
+~~Oracle에서는 NULL을 가장 큰 값으로 취급하며 SQL Server에서는 NULL을 가장 작은 값으로 취급한다.~~
+
+### SELECT 문장 실행 순서
+FROM -> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER BY  <- <br>
+<br>
+Ex)<br>
+SELECT TOP(2) WITH TIES ENAME, SAL
+FROM EMP
+ORDER BY SAL DESC;<br>
+위는 급여가 높은 2명을 내림차순으로 출력하는데 같은 급여를 받는 사원은 같이 출력한다. (WITH TIES)
+;;
+***
+
+### JOIN
+: 두 개 이상의 테이블들을 연결 또는 결합하여 데이터를 출력하는 것.<br>
+일반적으로 행들은 PK나 FK 값의 연관에 의해 JOIN 이 성립된다. 어떤 경우에는 PK, FK 관계가 없어도 논리적인 값들의 연관만으로 JOIN 이 성립가능하다.
+<br>
+5가지 테이블을 JOIN 하기 위해서는 최소 4번의 JOIN 과정이 필요하다. (N-1)
+
+### EQUI JOIN
+: 
