@@ -168,10 +168,10 @@ CASE LOC WHEN 'a' THEN 'b'<br>
 4. SQL 문장의 제일 마지막에 위치한다.
 5. SELECT 절에서 정의하지 않은 칼럼 사용 가능<br>
 <br>
-~~Oracle에서는 NULL을 가장 큰 값으로 취급하며 SQL Server에서는 NULL을 가장 작은 값으로 취급한다.~~
+~~ Oracle에서는 NULL을 가장 큰 값으로 취급하며 SQL Server에서는 NULL을 가장 작은 값으로 취급한다. ~~
 
 ### SELECT 문장 실행 순서
-FROM -> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER BY  <- <br>
+FROM -> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER BY <br>
 <br>
 Ex)<br>
 SELECT TOP(2) WITH TIES ENAME, SAL
@@ -188,4 +188,63 @@ ORDER BY SAL DESC;<br>
 5가지 테이블을 JOIN 하기 위해서는 최소 4번의 JOIN 과정이 필요하다. (N-1)
 
 ### EQUI JOIN
-: 
+: 2개의 테이블 간에 칼럼값들이 서로 정확하게 일치하는 경우에 사용. 대부분 PK, FK의 관계를 기반으로 한다.
+
+### NON EQUI JOIN
+: 2개의 체이블 간에 칼럼값들이 서로 정확하게 일치하지 않는 경우에 사용.<br>
+'=' 연산자가 아닌 BETWEEN, >, <= 등의 연산자 사용.<br>
+<br> 
+Ex.<br>
+SELECT E.ENAME, E.JOB, E.SAL, S.GRADE
+FROM EMP E, SALARY S
+WHERE E.SAL BETWEEN S.LOSAL AND S.HSAL;<br>
+위는 E의 SAL의 값을 S의 LOSAL과 HSAL 범위에서 찾는 것이다.
+
+***
+
+### 집합연산자
+: 두 개 이상의 테이블에서 조인을 사용하지 않고 연관된 데이터를 조회할 때 사용.<br>
+SELECT 절의 칼럼 수가 동일하고 SELECT 절의 동일 위치에 존재하는 칼럼의 데이터 타입이 상호 호환 가능할 때 사용 가능.
+
+### 일반 집합 연산자
+1. UNION : 합집합(중복 행은 1개로 처리)
+2. UNION ALL : 합집합(중복 행도 표시)
+3. INTERSECT : 교집합(INTERSECTION)
+4. EXCEPT, MINUS : 차집합(DIFFERENCE)
+5. CROSS JOIN : 곱집합(PRODUCT)
+
+### 순수 관계 연산자
+: 관계형 DB를 새롭게 구현
+1. SELECT -> WHERE
+2. PROJECT -> SELECT
+3. NATURAL JOIN -> 다양한 JOIN
+4. DIVIDE -> 사용X
+
+### FROM 절 JOIN 형태
+1. INNER JOIN
+2. NATURAL JOIN
+3. USING 조건절
+4. ON 조건절
+5. CROSS JOIN
+6. OUTER JOIN
+
+#### INNER JOIN
+: JOIN 조건에서 동일한 값이 있는 행만 반환. USING이나 ON 절을 필수적으로 사용.
+#### NATURAL JOIN
+: 두 테이블 간의 동일한 이름을 갖는 모든 칼럼들에 대해 EQUI JOIN 수행. NATURAL JOIN이 명시되면 추가로 USING, ON, WHERE 절에서 JOIN 조건을 정의할 수 없다. (SQL Server 미지원)
+#### USING 조건절
+: 같은 이름을 가진 칼럼들 중에서 원하는 칼럼에 대해서만 선택적으로 EQUI JOIN을 할 수 있다. JOIN 칼럼에 대해서 ALIAS난 테이블 이름과 같은 접두사를 붙일 수 있다. (SQL Server 미지원)
+#### ON 조건절
+: ON 조건절과 WHERE 조건절을 분리하여 이해가 쉬우며, 칼럼명이 다르더라도 JOIN 조건을 사용할 수 있는 장점이 있다. ALIAS나 테이블명 반드시 사용.
+#### CROSS JOIN
+: 양쪽 집합의 M * N 건의 데이터 조합이 발생한다.
+#### OUTER JOIN
+: JOIN 조건에서 동일한 값이 없는 행도 반환 가능하다. USING이나 ON 조건절 반드시 사용해야 함.
+#### LEFT OUTER JOIN
+: 조인 수행시 먼저 표기된 좌측 테이블에 해당하는 데이터를 읽은 후, 나중 표기된 우측 테이블에서 JOIN 대상 데이터를 읽어온다. 우측 값에서 같은 값이 없는 경우 NULL 값으로 채운다.
+#### RIGHT OUTER JOIN
+: 조인 수행시 먼저 표기된 우측 테이블에 해당하는 데이터를 읽은 후, 나중 표기된 좌측 테이블에서 JOIN 대상 데이터를 읽어온다. 좌측 값에서 같은 값이 없는 경우 NULL 값으로 채운다.
+#### FULL OUTER JOIN
+: 조인 수행시 좌측, 우측 테이블의 모든 데이터를 읽어 JOIN하여 결과를 생성한다. 중복 데이터는 삭제한다.
+
+***
