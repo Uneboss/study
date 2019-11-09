@@ -168,7 +168,7 @@ CASE LOC WHEN 'a' THEN 'b'<br>
 4. SQL 문장의 제일 마지막에 위치한다.
 5. SELECT 절에서 정의하지 않은 칼럼 사용 가능<br>
 <br>
-~~ Oracle에서는 NULL을 가장 큰 값으로 취급하며 SQL Server에서는 NULL을 가장 작은 값으로 취급한다. ~~
+~~Oracle에서는 NULL을 가장 큰 값으로 취급하며 SQL Server에서는 NULL을 가장 작은 값으로 취급한다.~~
 
 ### SELECT 문장 실행 순서
 FROM -> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER BY <br>
