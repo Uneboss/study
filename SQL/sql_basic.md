@@ -279,7 +279,7 @@ SELECT 절의 칼럼 수가 동일하고 SELECT 절의 동일 위치에 존재�
 **단일 행 비교 연산자** : =, <, >, <> 등
 **다중 행 비교 연산자** : IN, ALL, ANY, SOME 등
 
-### 스칼라 서브쿼리
+#### 스칼라 서브쿼리
 : 한 행, 한 칼럼만을 반환하는 서브쿼리.
 
 ### 인라인 뷰 
@@ -296,19 +296,19 @@ Ex. CREATE VIEW V_PLAYER_TEAM AS
     
 ***
 
-### ROLLUP
+#### ROLLUP
 : Subtotal을 생성하기 위해 사용. Grouping Columns의 수를 N이라고 했을 때 N+1 Level의 Subtotal이 생성된다. 인수 순서에 주의.
 
-### GROUPING
+#### GROUPING
 : Subtotal의 total을 생성.
 
-### CUBE
+#### CUBE
 : 결합 가능한 모든 값에 대하여 다차원 집계를 생성. ROLLUP에 비해 시스템에 부하 심함.
 
-### GROUPING SETS
+#### GROUPING SETS
 : 인수들에 대한 개별 집계를 구할 수 있다. 다양한 소계 집합 생성 가능.
 
 ***
 
-### 윈도우 함수
+#### 윈도우 함수
 :
