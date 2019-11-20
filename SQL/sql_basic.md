@@ -310,4 +310,4 @@ Ex. CREATE VIEW V_PLAYER_TEAM AS
 
 ***
 
-#### 윈도우 함수
+#### 윈도우 함
