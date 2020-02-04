@@ -1,7 +1,7 @@
 # if else ( == elif)
 def age_check(age):
   print(f"you are {age}")
-# use curly braces on variables
+# use braces on variables
   if age < 18:
     print("You can't drink")
   elif age == 18 or age == 19:
