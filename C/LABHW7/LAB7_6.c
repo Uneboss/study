@@ -1,10 +1,3 @@
-//
-//  main.c
-//  LAB7_6
-//
-//  Created by 김윤혜 on 2020/04/27.
-//  Copyright © 2020 김윤혜. All rights reserved.
-//
 
 #include <stdio.h>
 
