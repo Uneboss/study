@@ -15,14 +15,14 @@ db.employees.find({empno:7900}, {ename:1})
 ```
 db.employees.find({empno:{$gt:7500, $lte:7600}}, {empno:1, ename:1, _id:0})
 ```
-{ "empno" : 7566, "ename" : "JONES" }
+{ "empno" : 7566, "ename" : "JONES" }<br>
 { "empno" : 7521, "ename" : "WARD" }
 
 ### (4)  Select empno from employees where empno = 7782 or empno=7844
 ```
 db.employees.find($or:[{empno:7782}, {empno:7844}]}, {empno:1, _id:0})
 ```
-{ "empno" : 7782 }
+{ "empno" : 7782 }<br>
 { "empno" : 7844 }
 
 ### (5)  Select count(*) from employees
@@ -53,8 +53,8 @@ db.employees.distinct("deptno")
 ```
 db.employees.find({deptno:10}, {ename:1, job:1, _id:0}).sort({ename:-1})
 ```
-{ "ename" : "PRESIDENT", "job" : "CEO" }
-{ "ename" : "CLERK", "job" : "CLERK" }
+{ "ename" : "PRESIDENT", "job" : "CEO" }<br>
+{ "ename" : "CLERK", "job" : "CLERK" }<br>
 { "ename" : "CLARK", "job" : "MANAGER" }
 
 ### (9) Select sum(salary) from employees
@@ -67,6 +67,6 @@ db.employees.aggregate([ $group: {_id:null, total_salary: {$sum: "$sal"}}}])
 ```
 db.employees.aggregate([{ $group: {_id: "$deptno", avg_sal: {$avg:"$sal"}}}, {$sort: {_id:1}}])
 ```
-{ "_id" : 10, "avg_sal" : 2916.6666666666665 }
-{ "_id" : 10, "avg_sal" : 2175 }
+{ "_id" : 10, "avg_sal" : 2916.6666666666665 }<br>
+{ "_id" : 10, "avg_sal" : 2175 }<br>
 { "_id" : 10, "avg_sal" : 1566.6666666666667 }
