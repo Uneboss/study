@@ -1,0 +1,434 @@
+---
+title: "미세먼지 예측"
+output: html_document
+---
+
+## 데이터 준비
+
+### (1) 8개 도시 월별 미세먼지 측정량 불러오기
+
+```{r}
+library(tidyverse)
+library(fpp3)
+```
+
+```{r}
+df <- read_csv("PM10w.csv")
+df <- df[,-2]
+```
+
+```{r}
+df
+```
+
+### (2) tsibble로 변환
+
+```{r}
+pm10w<- df %>%
+  mutate(Month=yearmonth(yymm)) %>%
+  select(-yymm) %>%
+  as_tsibble(index=Month)
+```
+
+```{r}
+pm10w
+```
+
+```{r}
+class(pm10w)
+```
+```{r}
+index(pm10w)
+```
+
+### (3) Wide format(pm10w)에서 Long format(pm10)으로 변환
+
+```{r}
+pm10 <- pivot_longer(pm10w, cols=c(-Month, seoul, busan, daegu, incheon, gwangju, daejeon, ulsan, sejong), names_to='city', values_to='concentration')
+```
+
+```{r}
+pm10
+```
+
+## 시계열 그림
+
+```{r}
+autoplot(pm10, concentration)
+```
+
+```{r}
+# 위와 같은 그림을 가지는 다른 방법
+ggplot(pm10, aes(x=Month, y=concentration, color=city)) +
+  geom_line(aes(linetype=city))
+```
+
+* 분산이 일정하진 않지만 비교적 일정한 편으로 보인다.
+
+```{r}
+ggplot(pm10, aes(x=Month, y=concentration, color=city, group=city)) +
+  geom_line() +
+  facet_grid(city~.)
+```
+
+* 각 도시의 미세먼지 측정량 그래프가 비슷한 모양이다. 계절성이 있음을 짐작해볼 수 있다.
+
+## 계절성 그림
+### gg_season
+
+```{r}
+pm10 %>%
+  gg_season(concentration) +
+  ylab("concentration of pm10") +
+  ggtitle("pm10 in Korea cities")
+```
+
+* 각 도시마다 시기별로 그래프의 모양이 비슷하고 도시별로 비교하여도 비슷하다. 계절성이 있다.
+
+### gg_subseries
+```{r}
+pm10 %>%
+  gg_subseries(concentration) +
+  ylab("concentration of pm10") +
+  ggtitle("pm10 in Korea cities")
+```
+
+* 도시별 월별 그림을 그려보아도 여름에는 낮고 겨울,봄에 높은 계절성을 확인할 수 있다.
+
+## ACF의 특징 기술
+
+```{r}
+pm10 %>% ACF(concentration) %>% autoplot()
+```
+
+* 낮은 lag 차수에도 기각역을 꽤 벗어나는 것을 볼 수 있다. 백색잡음이 아닐 것이라 추측해볼 수 있다. 이는 아직 남은 정보가 있다는 의미이다.
+
+## Ljung-Box 검정
+
+```{r}
+Box.test(pm10$concentration, lag=12, type='L')
+```
+
+* ljung-box의 가설
+H0: p1 = ... = p12 = 0
+p-value가 0.05보다 작으므로 H0를 기각한다. 따라서 백색잡음이 아니다. 남은 정보가 있다.
+
+
+# 서울의 미세먼지 측정량
+
+```{r}
+pm10s <- pm10 %>% 
+  filter(city=="seoul") %>%
+  select(Month, concentration)
+
+pm10s
+```
+
+## 시계열 그림
+
+```{r}
+autoplot(pm10s, concentration)
+```
+
+```{r}
+# 위와 같은 그림을 그리는 다른 방법 
+ggplot(pm10s, aes(x=Month, y=concentration)) +
+  geom_line()
+```
+
+* 분산이 일정하지 않지만 비교적 일정한 것으로 보인다.
+
+## 계절성 검토
+
+### gg_season
+
+```{r}
+pm10s %>%
+  gg_season(concentration) +
+  ylab("concentration of pm10") +
+  ggtitle("pm10 in Seoul")
+```
+
+* 모든 연도의 그래프가 겨울에서 봄에 가장 미세먼지 측정량이 높아지고 여름에 낮아지는 모양을 하고 있다. 계절성이 있음을 알 수 있다.
+
+### gg_subseries
+
+```{r}
+pm10s %>%
+  gg_subseries(concentration) +
+  ylab("concentration of pm10") +
+  ggtitle("pm10 in Seoul")
+```
+
+* 3월에 가장 높아지며 9월에 가장 낮아지는 것을 확인할 수 있다.
+겨울에서 봄에 미세먼지 측정량이 높아지며 여름에 낮아지는 계절성이 있다. 
+
+* 정리: 계절성이 있고 추세는 불명확해보인다.
+
+## 서울 미세먼지(pm10s) 분석
+
+## 데이터 분할
+
+```{r}
+TRN <- filter_index(pm10s, ~'2017 DEC')
+TST <- filter_index(pm10s, '2018 JAN'~'2019 DEC')
+```
+
+```{r}
+TRN
+```
+
+```{r}
+TST
+```
+
+### 분해법 적용
+
+## (1) X11
+
+```{r}
+x11_dcmp <- pm10s %>%
+  model(x11=feasts:::X11(concentration, type="additive")) %>%
+  components()
+```
+
+```{r}
+autoplot(x11_dcmp) + ggtitle("Additive X11 decomposition of pm10 in Seoul")
+```
+
+* 네모의 크기가 가장 작은 불규칙 성분의 영향이 가장 크다.
+
+### 분해결과: trend, season_adjust
+
+```{r}
+x11_dcmp %>%
+  ggplot(aes(x = Month)) +
+  geom_line(aes(y = concentration, colour = "Data")) +
+  geom_line(aes(y =season_adjust, colour = "Seasonally Adjusted")) +
+  geom_line(aes(y = trend, colour = "Trend")) +
+  xlab("Month") + ylab("concentration of pm10") +
+  ggtitle("x11: pm10 in Seoul") +
+  scale_colour_manual(values=c("gray", "blue", "red"),
+                      breaks=c("Data", "Seasonally Adjusted", "Trend"))
+```
+
+* 계절조정 시계열과 추세성분은 불규칙성분의 차이만 있지만 그래프가 크게 다른 것은 위에서 확인하였듯 불규칙 성분의 영향이 가장 크기 때문이다. 추세가 불명확하다.
+
+### 계절성분의 시각화
+
+```{r}
+x11_dcmp %>%
+  gg_subseries(seasonal)
+```
+
+* 겨울에서 봄에 미세먼지 측정량이 높아지고 여름에는 낮아지는 뚜렷한 계절성을 가진다.
+
+* 추세가 불명확하고 겨울에 미세먼지 측정량이 높아지는 뚜렷한 계절성이 있다.
+
+## (2) SEATS
+
+```{r}
+seats_dcmp <- pm10s %>%
+  model(seats=feasts:::SEATS(concentration)) %>%
+  components()
+```
+
+```{r}
+autoplot(seats_dcmp) + ggtitle("SEATS decomposition of pm10 in Seoul")
+```
+### 분해결과: trend, season_adjust
+```{r}
+seats_dcmp %>%
+  ggplot(aes(x = Month)) +
+  geom_line(aes(y = concentration, colour = "Data")) +
+  geom_line(aes(y =season_adjust, colour = "Seasonally Adjusted")) +
+  geom_line(aes(y = trend, colour = "Trend")) +
+  xlab("Month") + ylab("concentration of pm10") +
+  ggtitle("SEATS: pm10 in Seoul") +
+  scale_colour_manual(values=c("gray", "blue", "red"),
+                      breaks=c("Data", "Seasonally Adjusted", "Trend"))
+```
+
+* 추세가 떨어지는 것처럼 보이나 불명확하다.
+
+### 계절성분의 시각화
+```{r}
+seats_dcmp %>%
+  gg_subseries(seasonal)
+```
+
+* 겨울에서 봄에 미세먼지 측정량이 높아지고 여름에 떨어지는 뚜렷한 계절성이 있다.
+
+* 추세가 떨어지는 것처럼 보이나 불명확하고 겨울에 pm10의 측정량이 높아지는 뚜렷한 계절성을 볼 수 있다.
+
+## (3) STL
+
+```{r}
+stl_dcmp <- pm10s %>%
+  model(STL(concentration~trend(window=7) + season(window='periodic'), robust=TRUE)) %>%
+  components()
+```
+
+```{r}
+autoplot(stl_dcmp) + ggtitle("STL decomposition of pm10 in Seoul")
+```
+
+* 뚜렷한 계절성을 확인할 수 있다.
+
+### 분해결과: trend, season_adjust
+
+```{r}
+stl_dcmp %>%
+  ggplot(aes(x = Month)) +
+  geom_line(aes(y = concentration, colour = "Data")) +
+  geom_line(aes(y =season_adjust, colour = "Seasonally Adjusted")) +
+  geom_line(aes(y = trend, colour = "Trend")) +
+  xlab("Month") + ylab("concentration of pm10") +
+  ggtitle("STL: pm10 in Seoul") +
+  scale_colour_manual(values=c("gray", "blue", "red"),
+                      breaks=c("Data", "Seasonally Adjusted", "Trend"))
+```
+
+* 추세가 불명확하고 뚜렷한 계절성을 가진다.
+
+### 단순예측법 적용
+
+## 한 번에 예측
+
+```{r}
+Mpm10s <- model(TRN,
+                mn = MEAN(concentration),
+                rw = NAIVE(concentration),
+                rwd = RW(concentration~drift()),
+                srw = SNAIVE(concentration))
+Mpm10s
+```
+
+```{r}
+Apm10s <- augment(Mpm10s)
+Apm10s
+```
+
+### 예측값 그림
+```{r}
+autoplot(Apm10s, .fitted) +
+  autolayer(Apm10s, concentration, color = 'gray', size = 1.5) +
+  ggtitle('TRN: augment(Mpm10s)$.fitted')
+```
+
+### 잔차 그림
+
+```{r}
+autoplot(Apm10s, .resid) +
+  ggtitle('TRN: augment(Mpm10s)$.resid')
+```
+
+## 한 모델씩 뽑아 잔차 그림 보기
+
+### (1) MEAN
+
+```{r}
+gg_tsdisplay(filter(Apm10s, .model=='mn') %>% select(.resid))
+```
+
+### (2) Random Walk
+
+```{r}
+gg_tsdisplay(filter(Apm10s, .model=='rw') %>% select(.resid))
+
+```
+
+### (3) Random Walk with Drift
+
+```{r}
+gg_tsdisplay(filter(Apm10s, .model=='rwd') %>% select(.resid))
+
+```
+
+### (4) Seosnal Random Walk
+
+```{r}
+gg_tsdisplay(filter(Apm10s, .model=='srw') %>% select(.resid))
+
+```
+
+## model별 백색잡음 검정
+```{r}
+features(Apm10s, .resid, ljung_box, lag=4, dof=0)
+```
+
+## 성능 평가
+
+```{r}
+Fpm10s <- forecast(Mpm10s, h=24)
+Fpm10s
+```
+
+```{r}
+autoplot(Fpm10s, TRN, level=NULL, size=1) +
+  autolayer(TST, concentration)
+```
+
+### TRN에 대한 평가
+
+```{r}
+as.data.frame(accuracy(Mpm10s))
+```
+
+### TST에 대한 평가
+```{r}
+accuracy(Fpm10s, data=pm10s)
+```
+
+* 최종 모형은 TST에 대한 평가에서 MAPE, RMSE, MAE 모두 가장 낮게 나온 srw 모델이다.
+
+## 최종 모형의 예측값 그리기
+### 최종 모형: srw (Seasonal Random Walk) 모델
+```{r}
+MSRW <- model(TRN, SNAIVE(concentration))
+MSRW
+```
+
+### 예측값 생성
+```{r}
+FSRW <- forecast(MSRW, h='2 years')
+FSRW
+```
+
+```{r}
+hilo(FSRW)
+```
+
+```{r}
+autoplot(FSRW, pm10s)
+```
+
+## 잔차 검토
+```{r}
+ASRW <- augment(MSRW)
+ASRW
+```
+
+### 잔차의 히스토그램
+```{r}
+ggplot(ASRW, aes(x=.resid)) + geom_histogram()
+```
+### 잔차의 ACF
+```{r}
+ACF(ASRW, .resid)
+```
+
+```{r}
+autoplot(ACF(ASRW, .resid))
+```
+
+* ACF 그림을 보면 12차에서만 기각역을 벗어난 것을 확인할 수 있다. 하지만 제 1종 오류의 가능성이 있으므로 백색잡음 검정을 통해 다시 확인한다.
+
+### 잔차의 백색잡음
+
+```{r}
+# 잔차에 대한 Ljung_box 검정
+features(ASRW, .resid, ljung_box, lag=10, dof=0)
+```
+
+* 10차까지 검정한 결과 p-value가 0.05보다 크므로 ljung-box의 가설 H0를 기각하지 못한다. 따라서 더 이상 남은 정보가 없다는 것을 알 수 있고, SNAIVE 모델로 설명이 된다고 할 수 있다.
